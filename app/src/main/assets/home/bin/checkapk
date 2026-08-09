@@ -1,0 +1,33 @@
+#!/data/data/com.tool.tree/files/home/bin/bash
+# Kakathic
+
+if [[ $# -ne 1 || "$1" == "-h" || -z "$1" ]]; then
+echo "Usage: checkapk <file>";
+exit 1;
+fi
+
+result=$(unzip -ql "$1" 2>/dev/null | awk '
+    { fn = $NF }
+    fn == "original_apex" || / original_apex$/ { capex = 1 }
+    fn == "apex_payload.img" || / apex_payload\.img$/ { apex = 1 }
+    /(classes\.dex|AndroidManifest\.xml|resources\.arsc)$/ { apk++ }
+    /classes[0-9]*\.dex$/ { dex = 1 }
+    /\.class$/ { class = 1 }
+    index(fn, "/") == 0 && fn ~ /\.apk$/ { root_apk++ }
+    END {
+        if (capex) print "capex"
+        else if (apex) print "apex"
+        else if (apk >= 2) print "apk"
+        else if (dex) print "dex"
+        else if (class) print "class"
+        else if (root_apk >= 2) print "apks"
+        else if (root_apk == 1) print "zipapk"
+        else exit 1
+    }
+')
+
+if [[ $? -eq 0 && -n "$result" ]]; then
+    echo "$result"
+else
+    checktype "$1"
+fi

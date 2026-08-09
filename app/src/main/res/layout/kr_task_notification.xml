@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/kr_task_title"
+        style="@style/TextAppearance.Compat.Notification.Title"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:layout_marginBottom="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:breakStrategy="simple" />
+
+    <!-- Chiếm hết phần chiều cao còn lại mà hệ thống cho phép (thu gọn hay mở rộng), căn
+         trên để không bị dồn xuống giữa vùng thừa -->
+    <TextView
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:id="@+id/kr_task_log"
+        style="@style/TextAppearance.Compat.Notification.Info"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="top"
+        android:overScrollMode="always"
+        android:breakStrategy="simple" />
+
+    <ProgressBar
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:id="@+id/kr_task_progress"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="10dp"
+        android:progressDrawable="@drawable/kr_progress_shape" />
+</LinearLayout>

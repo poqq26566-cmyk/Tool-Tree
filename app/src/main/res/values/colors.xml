@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_bg_light">#f4f4f4</color>
+    <color name="window_bg_dark">#0f0f0f</color>
+    <color name="status_bg_dark">#222222</color>
+    <color name="status_bg_light">@android:color/white</color>
+    <color name="cardBgDark">#222222</color>
+    <color name="cardBgDarkTransparent">#9A000000</color>
+    <color name="cardBgLight">#CCFFFFFF</color>
+    <color name="cardBgLightTransparent">#B3FFFFFF</color>
+
+    <color name="color_load_low">#02d98d</color>
+    <color name="color_load_mid">#87cb00</color>
+    <color name="color_load_hight">#fc8a1b</color>
+    <color name="color_load_veryhight">#f9592f</color>
+
+    <color name="colorBlurLight">#A7FFFFFF</color>
+    <color name="colorBlurDark">#8D000000</color>
+    
+    <color name="colorPirmLight">#25FFFFFF</color>
+    <color name="colorPirmDark">#20000000</color>
+    
+    <color name="colorParseLight">#20FFFFFF</color>
+    <color name="colorParseDark">#20605f5f</color>
+    
+    <color name="colorAccent">#0dbda2</color>
+    <color name="colorPrimary">#64CDB6</color>
+    <color name="colorPrimaryDark">#30C7B6</color>
+    <color name="warning">#FFB300</color>
+    
+    <color name="kr_params_view_bg">#11000000</color>
+    <color name="kr_shortcut_color">#A7A7A7</color>
+    <color name="kr_shell_log_error">#cf4e4c</color>
+    <color name="kr_shell_log_script">#808080</color>
+    <color name="kr_shell_log_basic">#6c7d8f</color>
+    <color name="kr_shell_log_end">#0e75c7</color>
+
+    <color name="banner_info">#0dbda2</color>
+    <color name="banner_success">#43A047</color>
+    <color name="banner_warning">#FFB300</color>
+    <color name="banner_error">#cf4e4c</color>
+</resources>

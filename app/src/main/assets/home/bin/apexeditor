@@ -1,0 +1,169 @@
+#!/data/data/com.tool.tree/files/home/bin/bash
+# Kakathic
+source language
+
+do_decode() {
+  local input="" output="$APK/$PTAH"
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -i|--input) input="$2"; shift 2 ;;
+    -o|--output) output="$2"; shift 2 ;;
+    *)
+    echo "Decode: Unknown flag $1" >&2;
+    exit 1
+    ;;
+    esac
+  done
+
+  if [[ -z "$input" ]] || [[ ! -f "$input" ]]; then
+    echo "Missing parameter error" >&2
+    echo "-i|--input: $input" >&2
+    exit 1
+  fi
+
+  echo "$more_text_4 $input"
+
+  ten_file="$(echo "${input##*/}" | sed -e 's|\.apex$||' -e 's|\.capex$||')"
+  tm_save="$output/$ten_file"
+  apex_type="$(checkapk "$input")"
+  [ -d "$tm_save" ] && rm -fr "$tm_save"
+  mkdir -p "$tm_save/apex" "$tm_save/.cache"
+  echo "$apex_type" > "$tm_save/.cache/type"
+  
+  if [ "$apex_type" == "capex" ]; then
+    unzip -oq "$input" original_apex -d "$tm_save"
+    apkeditor d -f -t raw -i "$tm_save/original_apex" -o "$tm_save/apex" &>"$tm_save/.cache/apex_decode.log" || killtree "$(cat "$tm_save/.cache/apex_decode.log")"
+    rm -f "$tm_save/original_apex"
+    else
+    apkeditor d -f -t raw -i "$input" -o "$tm_save/apex" &>"$tm_save/.cache/apex_decode.log" || killtree "$(cat "$tm_save/.cache/apex_decode.log")"
+  fi
+
+  if [ -f "$tm_save/apex/root/apex_payload.img" ]; then
+    unpack_img -i "$tm_save/apex/root/apex_payload.img" -o "$tm_save" -d 1 &>>"$tm_save/.cache/apex_decode.log" || killtree "$(cat "$tm_save/.cache/apex_decode.log")"
+    rm -f "$tm_save/config/apex_payload_size.txt"
+  else
+    echo "Error: Item not found: apex_payload.img" >&2
+  fi
+
+  if [ -f "$tm_save/apex/root/apex_build_info.pb" ]; then
+  protoc_pb.py -d "$tm_save/apex/root/apex_build_info.pb" -o "$tm_save/apex_build_info.xml"
+  fi
+
+}
+
+do_build() {
+  local input="" output="$PTAD/out" key="testkey" compressed="auto" delete=0
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -i|--input) input="$2"; shift 2 ;;
+    -o|--output) output="$2"; shift 2 ;;
+    -k|--key) key="$2"; shift 2 ;;
+    -c|--compressed) compressed="$2"; shift 2 ;;
+    -d|--delete) delete="$2"; shift 2 ;;
+    *)
+    echo "Build: Unknown flag $1" >&2;
+    exit 1
+    ;;
+    esac
+  done
+
+  if [[ -z "$input" ]] || [[ ! -d "$input" ]]; then
+    echo "Missing parameter error" >&2
+    echo "-i|--input: $input" >&2
+    exit 1
+  fi
+
+  mkdir -p "$output"
+  echo "$apkb_text_1 ${input##*/}"
+  echo
+  
+  [ -f "$input/apex_build_info.xml" ] && protoc_pb.py -e "$input/apex_build_info.xml" -o "$input/apex/root/apex_build_info.pb"
+  
+  if [ -d "$input/apex_payload" ]; then
+  repack_img -i "$input/apex_payload" -o "$input/apex/root" -d 0 &>"$input/.cache/apex_build.log" || killtree "$(cat "$input/.cache/apex_build.log")"
+  
+  seva_payload="$input/apex/root/apex_payload.img"
+  # Ký avbtool
+  avbtool add_hashtree_footer \
+  --do_not_generate_fec \
+  --algorithm SHA256_RSA4096 \
+  --hash_algorithm sha256 \
+  --key "$ETC/key/4096/${key}.pem" \
+  --prop "apex.key:$key" \
+  --salt "$(checksum "$input/apex/root/apex_manifest.pb")" \
+  --image "$seva_payload"
+  
+  INFO=$(avbtool info_image --image "$seva_payload")
+  VBMETA_OFFSET=$(echo "$INFO" | grep "VBMeta offset:" | awk '{print $3}')
+  VBMETA_SIZE=$(echo "$INFO" | grep "VBMeta size:" | awk '{print $3}')
+  PARTITION_SIZE=$(( ((VBMETA_OFFSET + VBMETA_SIZE + 4095) / 4096 * 4096) + 4096 ))
+  avbtool resize_image --image "$seva_payload" --partition_size "$PARTITION_SIZE"
+
+  avbtool extract_public_key --key "$ETC/key/4096/${key}.pem" --output "$input/apex/root/apex_pubkey"
+  
+  else
+  echo "Error: Item not found: $output" >&2
+  fi
+  
+  if [ -d "$input/apex" ]; then
+  apkeditor b -f -i "$input/apex" -o "$input/${input##*/}.apex" &>>"$input/.cache/apex_build.log" || killtree "$(cat "$input/.cache/apex_build.log")"
+  fi
+  
+  if [ -f "$input/${input##*/}.apex" ]; then
+  signapk -a 4096 "$ETC/key/${key}.x509.pem" "$ETC/key/${key}.pk8" "$input/${input##*/}.apex" "$input/${input##*/}_sign.apex"
+  [ -f "$input/${input##*/}_sign.apex" ] || killtree "Apex sign error, please check again!"
+  fi
+  
+  if [ "$compressed" == "0" ]; then
+  nen_apex=0
+  elif [ "$compressed" == "1" ]; then
+  nen_apex=1
+  else
+  [ "$(cat "$input/.cache/type")" == "capex" ] && nen_apex=1 || nen_apex=0
+  fi
+  
+  if [ "$nen_apex" == 1 ]; then
+    apex_compression_tool.py compress -k "$key" --input "$input/${input##*/}_sign.apex" --output "$output/${input##*/}.capex"
+    echo "$save_text $output/${input##*/}.capex"
+  else
+    mv "$input/${input##*/}_sign.apex" "$output/${input##*/}.apex"
+    echo "$save_text $output/${input##*/}.apex"
+  fi
+
+  # dọn dẹp
+  if [ "$delete" == 1 ]; then
+  rm -fr "$input"
+  else
+  rm -fr "$input"/*.apex
+  fi
+  
+}
+
+# --- Điểm bắt đầu của Script ---
+COMMAND="$1"
+shift 2>/dev/null
+
+case "$COMMAND" in
+  d|decode)
+  do_decode "$@"
+  ;;
+  b|build)
+  do_build "$@"
+  ;;
+  *)
+  echo "Usage: apexeditor [decode|build] [options]"
+  echo "decode:"
+  echo "-i|--input: file.[apex,capex]"
+  echo "-o|--output: folder_out"
+  echo
+  echo "build:"
+  echo "-i|--input: folder_input"
+  echo "-o|--output: folder_out"
+  echo "-k|--key: name_sign (default: testkey)"
+  echo "-c|--compressed: [auto,0,1] (default: auto)"
+  echo "-d|--delete: [0,1]"
+  exit 1
+  ;;
+esac

@@ -1,0 +1,301 @@
+# Nyelv
+
+# all
+on_text="Be"
+off_text="Ki"
+save_text="Mentés ide:"
+folder_text="Mappa"
+option_text="Lehetőség"
+setting_text="Beállítások"
+device_text="Eszköz"
+model_text="Készülék neve"
+infor_text="Információ"
+refresh_text="Frissítés"
+utilities_text="Segédprogramok"
+tools_text="Eszközök"
+name_text="Név"
+author_text="Szerző"
+search_text="Keresés"
+doc_text="Szöveg"
+addon_text="Kiegészítő"
+home_text="Kezdőlap"
+begin_start="Adatok telepítése..."
+trademark_text="Márka"
+version_text="Verzió"
+default_text="Alapértelmezett"
+update_text="Frissítés"
+download_text="Letöltés"
+deleted_text="Kiegészítő eltávolítása"
+input_add_text="Kiegészítő megadása"
+hide_add_text="Kiegészítő elrejtése"
+build_text="Építés"
+decompile_text="Dekompilálás"
+projects_text="Jelenlegi projekt"
+sizes_text="Méret"
+sign_text="Aláírás"
+convert_text="Átalakítás"
+share_text="Megosztás"
+generate_text="Létrehozás"
+alignment_text="Igazítás"
+synthetic_text="Partíciók egyesítése"
+config_text="Konfiguráció"
+time_text="Idő"
+pin_text="Kiegészítő rögzítése"
+unpin_text="Rögzítés feloldása"
+dissblur_text="Elmosás kikapcsolása"
+tool_unpack_text="Dekompiláló eszköz"
+tool_repack_text="Építő eszköz"
+customize_tools_text="Eszközök testreszabása"
+updating_text="Frissítés folyamatban"
+scroll_ngang_text="Soft wrap napló kikapcsolása"
+input_file_text="Bemeneti fájl"
+input_folder_text="Bemeneti mappa"
+path_text="Elérési út"
+build_time_text_2="Jelenleg:"
+api_key_text="API-kulcs"
+
+# Főoldal
+home_text_1="Az alkalmazás információi és funkciói"
+home_text_2="ROM szerkesztése funkciók alapján"
+home_text_3="Gyökérjogot igénylő funkciók"
+home_text_4="Kiegészítők letöltése és telepítése"
+home_text_5="Parancsok futtatása"
+home_text_6="Alap parancsok kipróbálása"
+home_text_7="Parancsok végrehajtása teszteléshez"
+
+# Továbbiak
+more_text_1="Apkeditor"
+more_text_3="Aláírás importálása"
+more_text_4="Fájl megadása:"
+more_text_5="Hiányzó fájl:"
+more_text_6="Alkalmazásszerkesztő segédprogramok"
+more_text_7="Gyökérjogot igénylő funkciók"
+more_text_8="Kiegészítők letöltése és telepítése"
+more_text_9="Parancsok végrehajtása teszteléshez"
+more_text_10="Importálás"
+
+# Beállítások
+setting_text_1="Információ"
+setting_text_2="Értesítések és frissítések megtekintése"
+setting_text_3="Projekt"
+setting_text_4="Projekt váltása és tisztítás"
+setting_text_5="Egyéb engedélyek"
+setting_text_7="Funkciók"
+setting_text_8="Funkciók módosítása és be-/kikapcsolása"
+
+# Engedélyek
+permis_text_1="Akkumulátor-optimalizálás kikapcsolása"
+permis_text_2="Nyelv"
+permis_text_3="Megjegyzés: a módosítások érvényesítéséhez újra kell indítani az alkalmazást"
+permis_text_4="Fájlhozzáférési engedély"
+permis_text_5="Nyelv megváltoztatása"
+
+# Projekt
+project_text_3="Projekt tisztítása"
+project_text_4="A kicsomagolt projektek közvetlen törlése; a ROM és az APK dekompilált mappái is megjelennek"
+project_text_5="Főoldal felcserélése"
+project_text_6="Parancsikon hozzáadása parancsfuttatáshoz"
+project_text_7="Ikon elrejtése"
+project_text_8="Értesítések"
+project_text_9="Ez a Java számára maximálisan kiosztott memória mérete. 1024m. Csak nagy fájlok építésekor érdemes magasabb értéket használni, és az eszköznek elegendő RAM-mal kell rendelkeznie, hogy elkerülhető legyen a lassulás és a túlterhelés."
+project_text_10="RAM kiosztása Java számára"
+project_text_12="CPU-korlát"
+project_text_13="A beállítás után a folyamatok legfeljebb a kiválasztott számú CPU-t használhatják"
+project_text_14="Háttérkép módosítása"
+project_text_15="A rendszerkép visszaállításához törölje a teljes elérési utat, majd nyomja meg a megerősítést; ez a művelet automatikusan újraindítja az alkalmazást."
+
+# mount img
+mount_text_1="IMG csatolása"
+mount_text_2="Az ext IMG fájlok szerkeszthetők, az EROFS fájlok csak megtekinthetők"
+
+# umount img
+umount_text_1="IMG leválasztása"
+umount_text_2="Az IMG fájl csatoláskor mentésre került"
+umount_text_3="Leválasztás után, ha módosítva lett, az eredeti csatolt fájlba kerül mentésre"
+
+# backup img
+backup_text_1="IMG biztonsági mentése"
+backup_text_2="A biztonsági mentés után a fájl ide lesz mentve:"
+backup_text_3="! Nem létezik:"
+backup_text_4="Biztonsági mentés folyamatban:"
+
+# flash img
+flash_text_1="IMG villogtatása"
+flash_text_2="Újraindítás befejezéskor"
+flash_text_3="Indítás Recovery módba befejezéskor"
+flash_text_4="Válassza ki a villogtatandó IMAGE fájlt"
+flash_text_5="Megjegyzés: az IMAGE mérete nem haladhatja meg az eredeti méretet, különben bootloop hibát okozhat"
+flash_text_6="Adja meg a villogtatni kívánt fájlt (***.img)"
+flash_text_7="Megjegyzés: raw IMG fájlnak kell lennie"
+flash_text_8="Csak recovery módban villogtatható!"
+flash_text_9="Visszaszámlálás recovery módba"
+flash_text_10="Visszaszámlálás az eszköz újraindításáig"
+flash_text_11="Nem létezik, nem lehet rá villogtatni"
+flash_text_12="Kész"
+
+# Decode
+decode_text_1="IMG fájlok ne legyenek dekódolva"
+
+# Build
+builds_text_1="Korábban dekompilált projektek építése"
+builds_text_2="Partícióformátum és csomagolási módszer"
+builds_text_3="EROFS tömörítési mód"
+builds_text_4="Tömörítési szint"
+builds_text_6="Szint"
+builds_text_7="Megjegyzés: a 0 érték 0 MB szabad helynek felel meg; a szabad hely hozzáadása csak ext4 és f2fs partícióknál alkalmazható"
+builds_text_8="AVB, fstab, gyári recovery letiltása"
+
+# build super
+super_text_2="Csomagtípus"
+super_text_3="Formátum"
+super_text_5="Fürt neve"
+super_text_6="Minden eszköznek más a fürtneve"
+super_text_7="Válasszon IMG fájlt a super.img építéséhez"
+
+# build payload
+payload_text_2="Válasszon IMG fájlt a payload.bin építéséhez"
+payload_text_3="Dinamikus partíció"
+payload_text_4="Csak akkor érvényes, ha a dinamikus partíció engedélyezve van"
+
+# cover img
+convert_text_1="Fájl átalakítása"
+convert_text_2="A br és zstd fájlok tömörítési szintje; magasabb értékek esetén a tömörítés tovább tart"
+
+# split super
+super_split_text_1="Super feldarabolása"
+super_split_text_2="Alapértelmezés: 1024M fájlonként a feldaraboláskor"
+super_split_text_3="Válassza ki a feldarabolandó super.img fájlt"
+super_split_text_4="Feldarabolás folyamatban"
+
+# super_merge
+super_merge_text_1="Super egyesítése"
+super_merge_text_2="super.img egyesítése folyamatban"
+super_merge_text_3="Válassza ki a super.img.* fájlt az egyesítéshez super.img-vé"
+
+# APK
+decom_apk_text_1="Dekompilálás XML-ként"
+decom_apk_text_3="Ne dekompilálja"
+decom_apk_text_5="Csak az AndroidManifest.xml dekompilálása"
+decom_apk_text_7="Debug információk törlése a smali fájlokból"
+
+decom_apk_text_9="Fájltípusok listája"
+decom_apk_text_10="Csak a resources.arsc dekompilálása"
+decom_apk_text_11="Erőforrások dekompilálása"
+decom_apk_text_12="dex dekompilálása smali formátumba"
+decom_apk_text_13="Eredeti Manifest.xml másolása"
+decom_apk_text_14="DEX újraosztása"
+decom_apk_text_15="Minden dekompiláló eszköznek megvannak a saját funkciói, és az újraépítés sikerességi aránya is eltérő"
+
+# build apk
+build_apk_text_1="Szöveg rendezése és szűrése"
+build_apk_text_2="APK újraépítésekor hibák léphetnek fel, a probléma megoldásához segítséget kérhet a mesterséges intelligenciától"
+
+# khôi phục sign
+restore_apk_text_1="Eredeti aláírású fájl importálása"
+restore_apk_text_2="A visszaállítandó fájl importálása"
+restore_apk_text_3="Aláírás visszaállítása"
+
+# xáo trộn apk
+distur_apk_text_1="Erőforrások titkosítása, hogy az APK nehezebben legyen elemezhető"
+distur_apk_text_2="Obfuszkálás"
+
+# khôi phục xáo trộn
+apk_restore_text_1="Az APK titkosított erőforrásainak visszaállítása olvasható formába"
+apk_restore_text_2="Visszaállítás"
+
+# hợp nhất apks
+apk_mager_text_1="APKS fájl átalakítása APK-vá"
+apk_mager_text_2="APKS egyesítése"
+
+# Kiegészítők
+addon_text_1="Kiegészítőhiba"
+addon_text_2="Aktiválás után a kiegészítő oldaláról való kilépés eltávolítja azt"
+addon_text_3="Kiegészítő telepítésének indítása..."
+addon_text_10="Csak a főoldalon megjelenő kiegészítőket rejti el; a kód továbbra is fut, ha van korai indító fájl (early_start.sh)"
+
+# Kicsomagolás
+unpack_text_0="Átalakítás:"
+unpack_text_1="Kicsomagolás:"
+unpack_text_2="Napló mentve ide:"
+unpack_text_3="Sikertelen!"
+unpack_text_4="Nincs ramdisk.cpio!"
+unpack_text_5="Dekódolás sikertelen:"
+unpack_text_6="Nem dekódolva:"
+unpack_text_7="Megjegyzés: sparse super dekódolásakor az csak raw formátumra vált; ezután újra dekódolnia kell"
+unpack_text_8="Nem támogatott dekódolási formátum:"
+
+# Super
+supers_text_1="Super építése sikertelen!"
+supers_text_2="Super sikeresen felépítve"
+
+# Újra-csomagolás
+replag_text_1="Dekompilálás indítása"
+replag_text_2="Építés folyamatban"
+
+# Betöltés
+load_text_1="Adatok csatlakoztatása..."
+load_text_2="Hálózati hiba, kérjük ellenőrizze újra"
+
+# APK hibák
+apke_text_1="APK dekompilálási hiba"
+apke_text_3="APK fájl hiba"
+
+# APK építés
+apkb_text_1="Elem megadása:"
+apkb_text_2="Szöveg ellenőrzése..."
+apkb_text_3="Ellenőrzés kész"
+apkb_text_6="Használt aláírás:"
+
+# Nyelv hozzáadása
+addlang_text_2="Könyvtár tömörítése"
+addlang_text_3="Ha az APK rendszeralkalmazásként van telepítve, és az APK-ban van lib mappa, akkor érdemes a „Ki” opciót választani; egyébként maradjon az alapértelmezett."
+
+# APK biztonsági mentés
+backups_text_1="Csak az APK fájlok kerülnek mentésre, az APKS adatai nem"
+backups_text_2="Biztonsági mentés"
+backups_text_3="Alkalmazás"
+
+# Frissítés
+update_text_2="Frissítések keresése..."
+update_text_3="Letöltés indítása..."
+update_text_4="Ön a legfrissebb verziót használja."
+update_text_5="GitHub"
+update_text_6="Új verzió érhető el, kérjük frissítse az alkalmazást: Beállítások > Információ > Frissítés"
+
+# dexopt
+dexopt_app_text="Dexopt"
+dexopt_app_text_1="Az alkalmazásindítás felgyorsítása"
+dexopt_app_text_2="Az összes rendszercsomag"
+dexopt_app_text_3="Ha ez az opció be van kapcsolva, a fenti alkalmazáslista elem hatástalan lesz"
+
+# framework auto
+framework_auto_text="Framework automatikus importálása"
+
+# Funkciók
+use_network_text="A letöltés folytatásához hálózati hozzáférés szükséges"
+root_warning_text="Kérjük, rootolja az eszközt a funkció használatához"
+deleted_file_text="Az eredeti fájl törlése a befejezés után"
+deleted_project_text="A projekt törlése az építés befejezése után"
+google_translate_text="Google Fordító"
+
+# apex editor
+apex_text="Apex szerkesztő"
+apex_text_1="Apex tömörítése capex formátumba"
+apex_text_2="Támogatott fájllista: apex, capex"
+
+# egyéb
+build_time_text_1="ROM építési idő"
+convert_img_text="Az építés befejezése után folytatja az átalakítást"
+list_partition_text="A dekompilált partíciók listája"
+xoaoat_text_1="Rendszer ART & Odex gyorsítótár törlése"
+open_activity_text="Mappa megnyitása:"
+patch_text_fscontex="fs_config és fs_contexts javítása"
+config_text_1="Meglévő projekt átalakítása"
+config_text_2="Új projekt létrehozása vagy mappa kiválasztása"
+
+# boot
+boot_text_1="A Java telepítése folyamatban van, nyissa meg újra 1–2 perc múlva..."
+note_genmini_text="Kattints a jobb felső sarokban lévő 3 pontos menüre az ingyenes API-kulcs létrehozásához."
+
+split_number_desc="Adja meg a szuper fájl felosztásának mennyiségét"
+split_number_label="Kezdőszám: 1"

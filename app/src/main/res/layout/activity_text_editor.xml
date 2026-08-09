@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.omarea.common.ui.BlurViewLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/editor_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:orientation="vertical">
+
+    <!-- Toolbar trên cùng -->
+    <include
+        layout="@layout/app_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Khu vực cuộn chính -->
+    <ScrollView
+        android:id="@+id/main_list_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:fadingEdge="vertical"
+        android:fillViewport="true"
+        android:focusable="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <!-- Cột số dòng -->
+            <TextView
+                android:id="@+id/editor_line_numbers"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:gravity="top|end"
+                android:includeFontPadding="false"
+                android:paddingStart="3dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="3dp"
+                android:paddingBottom="4dp"
+                android:text="1"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp"
+                android:typeface="monospace" />
+
+            <!-- Dải ngăn cách -->
+            <View
+                android:id="@+id/editor_line_divider"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:alpha="0.2"
+                android:background="?android:attr/textColorSecondary" />
+
+            <!-- Container khung nhập liệu -->
+            <FrameLayout
+                android:id="@+id/editor_content_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <EditText
+                    android:id="@+id/editor_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="top|start"
+                    android:hint="@string/editor_hint_empty"
+                    android:imeOptions="flagNoExtractUi"
+                    android:includeFontPadding="false"
+                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:minHeight="300dp"
+                    android:paddingStart="5dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="4dp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorHint="?android:attr/textColorSecondary"
+                    android:textSize="12sp"
+                    android:typeface="monospace" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Thanh phím đặc biệt ở đáy -->
+    <com.omarea.common.ui.BlurBottomBarLayout
+        android:id="@+id/editor_special_chars_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/krscript_item_ripple_in">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/editor_special_chars_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp" />
+
+        </HorizontalScrollView>
+
+    </com.omarea.common.ui.BlurBottomBarLayout>
+
+</com.omarea.common.ui.BlurViewLinearLayout>

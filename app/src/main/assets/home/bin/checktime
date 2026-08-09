@@ -1,0 +1,13 @@
+# Kakathic
+now=$(date +%s)
+diff=$((now - START_TIME))
+min=$((diff / 60))
+sec=$((diff % 60))
+
+printf -v time "%02d:%02d" "$min" "$sec"
+
+if [ "$1" = "-q" ]; then
+    echo "$time"
+else
+    echo "@string/check_time: $time"
+fi

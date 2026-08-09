@@ -1,0 +1,21 @@
+# Kakathic
+cd .github/module
+
+for vmk in $(find etc/*.jar .local/share/apktool/framework/*.apk -type f); do
+mkdir -p "${vmk%.*}®${vmk##*.}_7zv2"
+7z x "$vmk" -o"${vmk%.*}®${vmk##*.}_7zv2" -y >/dev/null
+rm -fr "$vmk"
+done
+
+for vnk in $(find etc/apkeditor®jar_7zv2/frameworks/android/*apk etc/apktool®jar_7zv2/prebuilt/*.jar -type f); do
+mkdir -p "${vnk%.*}®${vnk##*.}_7zv1"
+7z x "$vnk" -o"${vnk%.*}®${vnk##*.}_7zv1" -y >/dev/null
+rm -fr "$vnk"
+done
+
+mkdir -p lib root tmp TREE/ROM TOOL/APK usr/log
+
+# -snh -snl
+7z a -t7z -mx=9 -y ../module.7z
+mv ../module.7z ../module.so
+ls -lh ../module.so

@@ -1,0 +1,34 @@
+name: Add-on CI
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/addon/**'
+
+permissions: write-all
+
+jobs:
+  build-release:
+    if: ${{ github.repository_owner == 'Zenlua' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build add-on
+        run: |
+          for vv in .github/addon/*; do
+            [ -d "$vv" ] || continue
+            echo "Processing: $vv"
+            (
+            cd "$vv"
+            find . -exec touch -d "2026-01-01 00:00:00" {} +
+            7z a -t7z -mmt=off -mtc=off -mta=off -y /home/runner/${vv##*/}.add
+            )
+          done
+
+      - name: Upload module
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Tmp"
+          tag_name: "V1"
+          files: /home/runner/*.add

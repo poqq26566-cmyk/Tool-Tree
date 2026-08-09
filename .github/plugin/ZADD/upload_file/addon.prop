@@ -1,0 +1,20 @@
+# Add-on
+id=upload_file
+name=Upload file online
+author=Kakathic
+description=Upload files to web
+description_vi=Tải tập tin lên web
+version=1.0
+versionCode=100
+root=false
+
+# language
+google_text="Currently using a translation tool"
+gofile_text_1="Uploading to server:"
+gofile_text_2="Upload file error !"
+gofile_text_3="Link download:"
+gofile_text_5="The file does not exist!"
+gofile_text_6="You need to register an account and create a token in the API section: pixeldrain.com"
+upload_gofile_title="Upload Gofile"
+upload_pixeldrain_title="Upload Pixeldrain"
+token_label="Token"

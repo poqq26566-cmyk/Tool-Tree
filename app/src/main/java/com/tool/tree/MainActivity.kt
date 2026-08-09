@@ -1,0 +1,401 @@
+package com.tool.tree
+
+import android.content.ComponentName
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.ListPopupWindow
+import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.tabs.TabLayout
+import com.omarea.common.shared.FilePathResolver
+import com.omarea.common.shell.KeepShellPublic
+import com.omarea.common.ui.DialogHelper
+import com.omarea.common.ui.ProgressBarDialog
+import com.omarea.krscript.config.PageConfigReader
+import com.omarea.krscript.config.PageConfigSh
+import com.omarea.krscript.model.*
+import com.omarea.krscript.ui.ActionListFragment
+import com.omarea.krscript.ui.ParamsFileChooserRender
+import com.tool.tree.databinding.ActivityMainBinding
+import com.tool.tree.ui.FadeScalePageTransformer
+import com.tool.tree.ui.MainPagerAdapter
+import com.tool.tree.ui.SwipePager
+import com.tool.tree.ui.TabIconHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private val progressBarDialog by lazy { ProgressBarDialog(this) }
+    private var krScriptConfig = KrScriptConfig()
+    private val hasRoot by lazy { KeepShellPublic.checkRoot() }
+    private var openedSubPage = false
+    private var isFavoritesTab = false
+    private var fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface? = null
+
+    private val ACTION_FILE_PATH_CHOOSER = 65400
+    private val ACTION_FILE_PATH_CHOOSER_INNER = 65300
+    private lateinit var adapter: MainPagerAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ThemeModeState.switchTheme(this)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
+        setTitle(R.string.app_name)
+
+        if (ThemeConfig(this).getAllowNotificationUI()) {
+            WakeLockService.startService(applicationContext)
+        }
+
+        initAdapter()
+        loadTabs()
+
+        onBackPressedDispatcher.addCallback(this) {
+            startService(Intent(this@MainActivity, WakeLockService::class.java).apply {
+                action = WakeLockService.ACTION_END_WAKELOCK
+            })
+            // isEnabled = false
+            // onBackPressedDispatcher.onBackPressed()
+            finish()
+        }
+    }
+
+    private fun initAdapter() {
+        if (!::adapter.isInitialized) {
+            adapter = MainPagerAdapter(this)
+            adapter.attach(binding.viewPager)
+            binding.viewPager.setPageTransformer(FadeScalePageTransformer())
+        }
+    }
+
+    private fun loadTabs() {
+        progressBarDialog.showDialog(getString(R.string.please_wait))
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            val favorites = getItems(krScriptConfig.favoriteConfig)
+            val pages = getItems(krScriptConfig.pageListConfig)
+            val tab3Items = getItems(krScriptConfig.customTab3Config)
+            val tab4Items = getItems(krScriptConfig.customTab4Config)
+
+            if (!isActive) return@launch
+
+            withContext(Dispatchers.Main) {
+                progressBarDialog.hideDialog()
+                val theme = ThemeModeState.getThemeMode()
+
+                fun updateTab(pos: Int, items: ArrayList<NodeInfoBase>?, titleRes: Int, config: PageNode, isFav: Boolean) {
+                    items?.takeIf { it.isNotEmpty() }?.let { data ->
+                        val fragment = ActionListFragment.create(data, getKrScriptActionHandler(config, isFav), null, theme)
+                        if (adapter.getFragment(pos) == null) {
+                            adapter.addFragment(fragment, getString(titleRes))
+                        } else {
+                            adapter.replaceFragment(pos, fragment)
+                        }
+                    }
+                }
+
+                updateTab(0, favorites, R.string.tab_favorites, krScriptConfig.favoriteConfig, true)
+                updateTab(1, pages, R.string.tab_pages, krScriptConfig.pageListConfig, false)
+                updateTab(2, tab3Items, R.string.tab_custom3, krScriptConfig.customTab3Config, false)
+                updateTab(3, tab4Items, R.string.tab_custom4, krScriptConfig.customTab4Config, false)
+
+                setupTabs()
+            }
+        }
+    }
+
+    private fun reloadTabs() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val favorites = getItems(krScriptConfig.favoriteConfig)
+            val pages = getItems(krScriptConfig.pageListConfig)
+            val tab3Items = getItems(krScriptConfig.customTab3Config)
+            val tab4Items = getItems(krScriptConfig.customTab4Config)
+
+            if (!isActive) return@launch
+
+            withContext(Dispatchers.Main) {
+                val theme = ThemeModeState.getThemeMode()
+                
+                favorites?.let { adapter.getFragment(0)?.updateData(it, getKrScriptActionHandler(krScriptConfig.favoriteConfig, true), theme) }
+                pages?.let { adapter.getFragment(1)?.updateData(it, getKrScriptActionHandler(krScriptConfig.pageListConfig, false), theme) }
+                tab3Items?.let { adapter.getFragment(2)?.updateData(it, getKrScriptActionHandler(krScriptConfig.customTab3Config, false), theme) }
+                tab4Items?.let { adapter.getFragment(3)?.updateData(it, getKrScriptActionHandler(krScriptConfig.customTab4Config, false), theme) }
+            }
+        }
+    }
+
+    private fun setupTabs() {
+        val tabHelper = TabIconHelper(this)
+
+        binding.tabLayout.clearOnTabSelectedListeners()
+        binding.tabLayout.removeAllTabs()
+
+        for (position in 0 until adapter.getItemCount()) {
+            val title = adapter.getTitle(position)
+            val iconRes = when (position) {
+                0 -> R.drawable.tab_favorites
+                1 -> R.drawable.tab_pages
+                2 -> R.drawable.tab_custom3
+                3 -> R.drawable.tab_custom4
+                else -> R.drawable.tab_home
+            }
+            val tab = binding.tabLayout.newTab()
+            tab.customView = tabHelper.createTabView(title, getDrawable(iconRes)!!, position == binding.viewPager.currentItem)
+            binding.tabLayout.addTab(tab)
+        }
+
+        // FIX: Xử lý sự kiện click thủ công cho Custom Tab View
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                // Ép SwipePager chuyển trang khi ấn vào icon tab
+                if (binding.viewPager.currentItem != tab.position) {
+                    binding.viewPager.setCurrentItem(tab.position, true)
+                }
+
+                // Cập nhật hiệu ứng hiển thị (màu sắc/scale) của tab
+                tabHelper.updateHighlight(binding.tabLayout, tab.position)
+
+                // FIX: chỉ invalidate menu khi trạng thái favorites thật sự đổi,
+                // tránh rebuild toàn bộ Toolbar menu mỗi lần vuốt/settle tab
+                val nowFavorites = (tab.position == 0)
+                if (isFavoritesTab != nowFavorites) {
+                    isFavoritesTab = nowFavorites
+                    invalidateOptionsMenu()
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+        // Đồng bộ TabLayout khi trang được chọn do vuốt (SwipePager tự settle xong mới báo,
+        // tránh chọn tab liên tục theo từng pixel kéo giữa chừng).
+        binding.viewPager.setOnPageChangeListener(object : SwipePager.OnPageChangeListener {
+            override fun onPageSelected(position: Int) {
+                binding.tabLayout.getTabAt(position)?.select()
+            }
+        })
+    }
+
+    private fun getItems(pageNode: PageNode): ArrayList<NodeInfoBase>? {
+        return try {
+            if (pageNode.pageConfigSh.isNotEmpty()) {
+                PageConfigSh(this, pageNode.pageConfigSh, null).execute()
+            } else if (pageNode.pageConfigPath.isNotEmpty()) {
+                PageConfigReader(applicationContext, pageNode.pageConfigPath, null).readConfigXml()
+            } else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun restartApp() {
+        val intent = Intent(this, SplashActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            putExtra("force_reset", true)
+        }
+        startActivity(intent)
+        finish()
+    }
+
+    private fun getKrScriptActionHandler(pageNode: PageNode, isFavorites: Boolean): KrScriptActionHandler {
+        return object : KrScriptActionHandler {
+            override fun onActionCompleted(runnableNode: RunnableNode) {
+                when {
+                    runnableNode.autoFinish -> finishAndRemoveTask()
+                    runnableNode.reloadPage -> reloadTabs()
+                    runnableNode.autoRestart -> restartApp()
+                    runnableNode.autoKill -> {
+                        startService(Intent(this@MainActivity, WakeLockService::class.java).apply {
+                            action = WakeLockService.ACTION_END_WAKELOCK
+                        })
+                        finishAffinity()
+                    }
+                }
+            }
+
+            override fun addToFavorites(clickableNode: ClickableNode, handler: KrScriptActionHandler.AddToFavoritesHandler) {
+                val page = clickableNode as? PageNode ?: pageNode
+                val intent = Intent().apply {
+                    component = ComponentName(applicationContext, ActionPage::class.java)
+                    addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or Intent.FLAG_ACTIVITY_NO_HISTORY)
+                    putExtra("page", page)
+                    if (clickableNode is RunnableNode) putExtra("autoRunItemId", clickableNode.key)
+                }
+                handler.onAddToFavorites(clickableNode, intent)
+            }
+
+            override fun onSubPageClick(pageNode: PageNode) {
+                if (openedSubPage) return
+                openedSubPage = true
+                OpenPageHelper(this@MainActivity).openPage(pageNode)
+            }
+
+            override fun openFileChooser(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
+                return chooseFilePath(fileSelectedInterface)
+            }
+        }
+    }
+
+    private fun chooseFilePath(fileSelectedInterface: ParamsFileChooserRender.FileSelectedInterface): Boolean {
+        return try {
+            val multiple = fileSelectedInterface.multiple()
+            val pathHome = fileSelectedInterface.pathHome()
+            if (fileSelectedInterface.type() == ParamsFileChooserRender.FileSelectedInterface.TYPE_FOLDER) {
+                startActivityForResult(
+                    Intent(this, ActivityFileSelector::class.java).apply {
+                        putExtra("mode", ActivityFileSelector.MODE_FOLDER)
+                        putExtra("multiple", multiple)
+                        if (!pathHome.isNullOrEmpty()) putExtra("path_home", pathHome)
+                    },
+                    ACTION_FILE_PATH_CHOOSER_INNER
+                )
+            } else {
+                val suffix = fileSelectedInterface.suffix()
+                if (!suffix.isNullOrEmpty() || !pathHome.isNullOrEmpty()) {
+                    startActivityForResult(
+                        Intent(this, ActivityFileSelector::class.java).apply {
+                            if (!suffix.isNullOrEmpty()) putExtra("extension", suffix)
+                            putExtra("mode", ActivityFileSelector.MODE_FILE)
+                            putExtra("multiple", multiple)
+                            if (!pathHome.isNullOrEmpty()) putExtra("path_home", pathHome)
+                        },
+                        ACTION_FILE_PATH_CHOOSER_INNER
+                    )
+                } else {
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = fileSelectedInterface.mimeType() ?: "*/*"
+                        if (multiple) {
+                            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        }
+                    }
+                    startActivityForResult(intent, ACTION_FILE_PATH_CHOOSER)
+                }
+            }
+            this.fileSelectedInterface = fileSelectedInterface
+            true
+        } catch (e: Exception) {
+            Toast.makeText(this, "File picker error: ${e.message}", Toast.LENGTH_SHORT).show()
+            false
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && data != null) {
+            val currentInterface = fileSelectedInterface
+            val separator = currentInterface?.separator() ?: "\n"
+            val path = when (requestCode) {
+                ACTION_FILE_PATH_CHOOSER -> {
+                    val clipData = data.clipData
+                    if (currentInterface?.multiple() == true && clipData != null && clipData.itemCount > 0) {
+                        (0 until clipData.itemCount)
+                            .mapNotNull { FilePathResolver().getPath(this, clipData.getItemAt(it).uri) }
+                            .joinToString(separator)
+                    } else {
+                        data.data?.let { FilePathResolver().getPath(this, it) }
+                    }
+                }
+                ACTION_FILE_PATH_CHOOSER_INNER -> {
+                    val files = data.getStringArrayListExtra("files")
+                    if (currentInterface?.multiple() == true && files != null) {
+                        files.joinToString(separator)
+                    } else {
+                        data.getStringExtra("file")
+                    }
+                }
+                else -> null
+            }
+            fileSelectedInterface?.onFileSelected(path)
+            fileSelectedInterface = null
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.option_menu_reboot)?.isEnabled = hasRoot
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.option_menu_info -> { showSettingsDialog(); true }
+            R.id.option_menu_reboot -> { DialogPower(this).showPowerMenu(); true }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        if (openedSubPage) {
+            openedSubPage = false
+            reloadTabs()
+        }
+    }
+
+    private fun showSettingsDialog() {
+        val layout = LayoutInflater.from(this).inflate(R.layout.dialog_about, null)
+        val themeConfig = ThemeConfig(this)
+        
+        val themeSelector = layout.findViewById<TextView>(R.id.theme_selector)
+        val themeNames = listOf(
+            getString(R.string.theme_system_default), getString(R.string.theme_dark),
+            getString(R.string.theme_light), getString(R.string.theme_wallpaper_system),
+            getString(R.string.theme_wallpaper_dark), getString(R.string.theme_wallpaper_light)
+        )
+        
+        themeSelector.text = themeNames[themeConfig.getThemeMode().coerceIn(0, themeNames.size - 1)]
+        themeSelector.setOnClickListener {
+            val popup = ListPopupWindow(this)
+            popup.anchorView = themeSelector
+            popup.setAdapter(ArrayAdapter(this, R.layout.kr_spinner_dropdown, themeNames))
+            popup.setOnItemClickListener { _, _, position, _ ->
+                themeConfig.setThemeMode(position)
+                themeSelector.text = themeNames[position]
+                popup.dismiss()
+                ThemeModeState.switchTheme(this)
+                recreate()
+            }
+            popup.width = 500
+            popup.show()
+        }
+
+        layout.findViewById<CheckBox>(R.id.notification_ui).apply {
+            text = "$text "
+            isChecked = themeConfig.getAllowNotificationUI()
+            setOnCheckedChangeListener { _, isChecked ->
+                themeConfig.setAllowNotificationUI(isChecked)
+            }
+        }
+
+
+        layout.findViewById<TextView>(R.id.appliction_authorText).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://zenlua.github.io/Tool-Tree/website/Information.html")))
+        }
+        layout.findViewById<TextView>(R.id.appliction_nameText).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Zenlua/Tool-Tree")))
+        }
+
+        DialogHelper.customDialog(this, layout)
+    }
+}

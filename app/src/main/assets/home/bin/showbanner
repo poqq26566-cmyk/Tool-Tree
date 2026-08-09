@@ -1,0 +1,66 @@
+#!/data/data/com.tool.tree/files/home/bin/bash
+
+show_help(){
+echo "Use: showbanner -t|--title 'Hello' -m|--message 'Xin chào'"
+echo
+echo "-y|--type: info, warning, success, error"
+echo "-i|--icon: path/icon.png, kr_shortcut_logo"
+echo "-p|--position: top, bottom"
+}
+
+if [[ $# -eq 0 || "$1" != -* ]]; then
+show_help >&2
+exit 1
+fi
+
+TYPE=""; ICON=""; TITLE=""; MESSAGE=""; POSITION=""; AMON="";
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -y|--type)
+      TYPE="$2"
+      shift 2
+      ;;
+    -i|--icon)
+      ICON="$2"
+      shift 2
+      ;;
+    -p|--position)
+      POSITION="$2"
+      shift 2
+      ;;
+    -t|--title)
+      TITLE="$2"
+      shift 2
+      ;;
+    -m|--message)
+      MESSAGE="$2"
+      shift 2
+      ;;
+    -a|--am)
+      AMON=1
+      shift
+      ;;
+    -h|--help)
+      show_help
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Mặc định
+CMDs="broadcast -n com.tool.tree/com.tool.tree.BannerReceiver -a com.tool.tree.broadcast.BANNER "
+
+[ "$TYPE" ] && CMDs+="--es type \"$TYPE\" "
+[ "$ICON" ] && CMDs+="--es icon \"$ICON\" "
+[ "$POSITION" ] && CMDs+="--es position \"$POSITION\" "
+[ "$TITLE" ] && CMDs+="--es title \"$TITLE\" "
+[ "$MESSAGE" ] && CMDs+="--es text \"$MESSAGE\" "
+
+if [ "$AMON" == 1 ] || [ -z "$shell_progres" ]; then
+    eval "am $CMDs" &>/dev/null
+else
+    echo "am:[$CMDs]"
+fi

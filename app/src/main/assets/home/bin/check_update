@@ -1,0 +1,49 @@
+if checkonline; then
+
+    source language 2>/dev/null
+    link_url="https://api.github.com/repos/Zenlua/Tool-Tree/releases"
+
+    if [ "$(unzip -qp "$PATH_APK" assets/beta 2>/dev/null)" == 1 ]; then
+        websums="$(xem $link_url/tags/beta)"
+        tagname="${PACKAGE_VERSION_NAME//./}"
+    else
+        websums="$(xem $link_url/latest)"
+        tagname="$(echo "$websums" | jq -r '.tag_name // empty' | sed -e 's|\.||g' -e 's|V||')"
+    fi
+
+    websum="$(echo "$websums" | jq -r '.assets[0].digest // empty' | cut -d: -f2)"
+    websize="$(echo "$websums" | jq -r '.assets[0].size' | coverbyte)"
+    filesum="$(checksum "$PATH_APK")"
+    name_apk="$(echo "$websums" | jq -r .name)"
+    url_dowload="$(echo "$websums" | jq -r ".assets[0].browser_download_url // empty")"
+
+    if [ "$1" == "boot" ]; then
+        echo "Name: $name_apk"
+        echo "Tag: $tagname"
+        echo "Sum online: $websum"
+        echo "Sum apk: $filesum"
+        echo "Size: $websize"
+        echo "Url: $url_dowload"
+    fi
+
+    if [[ "$websum" == "$filesum" ]]; then
+        rm -fr $TEMP/size $TEMP/update $TEMP/sum
+    else
+        if [[ "$url_dowload" ]]; then
+            echo "$url_dowload" > $TEMP/update
+            echo "$websize" > $TEMP/size
+            echo "$websum" > $TEMP/sum
+        else
+            rm -fr $TEMP/size $TEMP/update $TEMP/sum
+        fi
+    fi
+
+    if [ -f $TEMP/update ] && [ "$1" == "boot" ]; then
+        notiservice \
+        -t "$update_text" \
+        -m "$update_text_6" \
+        -i "$ETC/icon/update.png" \
+        -s "taive '$url_dowload' '$TMP/Tool-Tree.apk' 2>&1 && openfile '$TMP/Tool-Tree.apk' || killtree '$load_text_2'"
+    fi
+
+fi

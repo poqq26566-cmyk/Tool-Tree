@@ -1,0 +1,57 @@
+# [Tool-Tree](https://zenlua.github.io/Tool-Tree)
+
+**Add-on file format**
+
+- Is a compressed file in .zip or .7z format
+
+- After compression is complete, rename the extension to file.add
+
+**Internal structure of add-on file**
+
+```
+file.add
+└── (in file.add)
+    ├── download.prop        # link to download add-on
+    ├── addon.prop           # add-on information
+    ├── icon.png (200x200)   # is the icon of the add-on
+    ├── menu.sh              # 3-dot menu button
+    ├── index.sh|index.xml   # After entering the page, all content will be displayed.
+    ├── firstly_start.sh     # This command only runs during data installation and application updates.
+    ├── early_start.sh       # The first time the application starts, it will run the shell.
+    ├── install.sh           # When the add-on is unzipped, it will run the shell.
+    └── uninstall.sh         # remove add-on it will run shell
+```
+
+**Menu.sh**
+
+```
+MPAT="${0%/*}"
+[ "$1" == "code_option" ] && echo '<option type="default" id="kk1" auto-off="true" reload="true" interruptible="false" >test</option>'
+[ "$1" == "code_shell" ] && echo '[ "$menu_id" == "kk1" ] && echo "path addon: '$MPAT' " '
+```
+
+**Contents of addon.prop file**
+
+```
+# is a shell script file
+id=test
+name=Test add-on
+author=Kakathic
+description=Short description
+version=1.0
+versionCode=100
+# if set to "true" root is required for add-on to work
+root=false
+```
+
+**Add-on icon**
+
+- The icon.png file is an image file that can be 100x100 ~ 200x200 in size
+
+- Can also rename icon_true.png, icon_false.png, true is dark mode, false is light mode.
+
+**Content inside index.sh, index.xml**
+
+- There are many things that are difficult to say that can only be found out by yourself.
+
+- [See details](https://zenlua.github.io/Tool-Tree/website/References.html)

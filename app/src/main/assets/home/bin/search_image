@@ -1,0 +1,34 @@
+#!/data/data/com.tool.tree/files/home/bin/bash
+jian="$TMP/by_name.txt"
+jian22="$TMP/by_name_$RANDOM.log"
+if [[ ! -f $jian ]]; then
+    BLOCKDEV=`which blockdev`
+    find /dev/block -mindepth 1 -type l | while read o; do
+        [[ -d "$o" ]] && continue
+        c=`basename "$o"`
+        echo ${b[@]} | grep -q "$c" && continue
+        echo $c
+    done | sort -u | while read Row; do
+    BLOCK=`find /dev/block -name $Row | head -n 1`
+    if [[ $BLOCK == *uuid/* || $BLOCK == *mapper/com.* || $BLOCK == */sd* ]]; then
+    continue
+    fi
+    if [[ -n $BLOCKDEV ]]; then
+        size=`blockdev --getsize64 $BLOCK`
+        if [[ $size -ge 1073741824 ]]; then
+            File_Type=`awk "BEGIN{print $size/1073741824}"`G
+        elif [[ $size -ge 1048576 ]]; then
+            File_Type=`awk "BEGIN{print $size/1048576}"`MB
+        elif [[ $size -ge 1024 ]]; then
+            File_Type=`awk "BEGIN{print $size/1024}"`kb
+        elif [[ $size -le 1024 ]]; then
+            File_Type=${size}b
+        fi
+        echo "$BLOCK|$Row ($File_Type)" >>$jian22
+    else
+        echo "$BLOCK|$Row" >>$jian22
+    fi
+    done
+    mv $jian22 $jian
+fi
+cat $jian
